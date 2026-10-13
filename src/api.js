@@ -84,3 +84,27 @@ export const updateOrderStatus = (id, status, trackingId = '') =>
     method: 'PUT',
     headers: auth()
   }).then(r => r.json())
+
+// Razorpay Payment
+export const createPaymentOrder = amount =>
+  fetch(API + '/api/payment/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount })
+  }).then(async r => {
+    const data = await r.json()
+    if (!data.success) throw new Error(data.message || 'Payment initiation failed')
+    return data
+  })
+
+export const verifyPaymentOrder = (paymentData) =>
+  fetch(API + '/api/payment/verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(paymentData)
+  }).then(async r => {
+    const data = await r.json()
+    if (!data.success) throw new Error(data.message || 'Payment verification failed')
+    return data
+  })
+

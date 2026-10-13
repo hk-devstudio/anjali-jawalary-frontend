@@ -360,58 +360,130 @@ function Storefront() {
     if (authModal === 'shop') setIsShopDrawerOpen(true)
   }
 
+  // Trigger Razorpay Payment Gateway
+  const triggerRazorpayPayment = async (payableAmount, orderPayload, onSuccess) => {
+    setIsSubmitting(true)
+    try {
+      const { createPaymentOrder, verifyPaymentOrder } = await import('./api')
+      const paymentOrder = await createPaymentOrder(payableAmount)
+
+      const options = {
+        key: paymentOrder.keyId || "rzp_test_TnQlgIaXc3S5Tt",
+        amount: paymentOrder.amount,
+        currency: paymentOrder.currency || "INR",
+        name: "Nanjal Collection",
+        description: `${orderPayload.orderType} Order Payment`,
+        image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=200&q=80",
+        order_id: paymentOrder.orderId,
+        handler: async function (response) {
+          try {
+            // Save order to database
+            const savedOrder = await placeOrder({
+              ...orderPayload,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              paymentStatus: "PAID"
+            })
+
+            // Verify signature on backend
+            await verifyPaymentOrder({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              localOrderId: savedOrder.id
+            }).catch(console.error)
+
+            onSuccess(savedOrder)
+          } catch (err) {
+            showToast("Order save error: " + err.message)
+          } finally {
+            setIsSubmitting(false)
+          }
+        },
+        prefill: {
+          name: currentUser?.name || "",
+          email: currentUser?.email || "",
+          contact: checkoutForm.phone || ""
+        },
+        theme: {
+          color: "#0f172a"
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false)
+            showToast("Payment window closed.")
+          }
+        }
+      }
+
+      if (window.Razorpay) {
+        const rzp = new window.Razorpay(options)
+        rzp.on('payment.failed', function (resp) {
+          showToast("Payment failed: " + resp.error.description)
+          setIsSubmitting(false)
+        })
+        rzp.open()
+      } else {
+        throw new Error("Razorpay SDK not loaded. Please refresh.")
+      }
+    } catch (err) {
+      showToast(err.message)
+      setIsSubmitting(false)
+    }
+  }
+
   // Place trial order
   const handlePlaceTrialOrder = async e => {
     e.preventDefault()
     if (!checkoutForm.address || !checkoutForm.phone) { showToast('Please fill all required fields'); return }
-    setIsSubmitting(true)
-    try {
-      const res = await placeOrder({
-        orderType: 'TRIAL',
-        customerName: currentUser.name,
-        customerEmail: currentUser.email,
-        customerPhone: checkoutForm.phone,
-        address: checkoutForm.address,
-        city: checkoutForm.city,
-        pincode: checkoutForm.pincode,
-        itemsJson: JSON.stringify(trialBox.map(p => ({ id: p.id, name: p.name, points: p.trialPoints || 1 }))),
-        subtotal: TRIAL_SERVICE_FEE,
-        walletDiscount: 0,
-        totalPayable: TRIAL_SERVICE_FEE,
-        cashbackEarned: TRIAL_SERVICE_FEE
-      })
+
+    const orderPayload = {
+      orderType: 'TRIAL',
+      customerName: currentUser.name,
+      customerEmail: currentUser.email,
+      customerPhone: checkoutForm.phone,
+      address: checkoutForm.address,
+      city: checkoutForm.city,
+      pincode: checkoutForm.pincode,
+      itemsJson: JSON.stringify(trialBox.map(p => ({ id: p.id, name: p.name, points: p.trialPoints || 1 }))),
+      subtotal: TRIAL_SERVICE_FEE,
+      walletDiscount: 0,
+      totalPayable: TRIAL_SERVICE_FEE,
+      cashbackEarned: TRIAL_SERVICE_FEE
+    }
+
+    triggerRazorpayPayment(TRIAL_SERVICE_FEE, orderPayload, (res) => {
       setTrialBox([])
       setIsTrialDrawerOpen(false)
       setOrderConfirmation({ ...res, cashbackEarned: TRIAL_SERVICE_FEE })
-    } catch (e) { showToast(e.message) }
-    finally { setIsSubmitting(false) }
+    })
   }
 
   // Place shop order
   const handlePlaceShopOrder = async e => {
     e.preventDefault()
     if (!checkoutForm.address || !checkoutForm.phone) { showToast('Please fill all required fields'); return }
-    setIsSubmitting(true)
-    try {
-      const res = await placeOrder({
-        orderType: 'SHOP',
-        customerName: currentUser.name,
-        customerEmail: currentUser.email,
-        customerPhone: checkoutForm.phone,
-        address: checkoutForm.address,
-        city: checkoutForm.city,
-        pincode: checkoutForm.pincode,
-        itemsJson: JSON.stringify(shopCart.map(i => ({ id: i.product.id, name: i.product.name, qty: i.qty, unitPrice: i.product.price }))),
-        subtotal: shopSubtotal,
-        walletDiscount: 0,
-        totalPayable: shopTotal,
-        cashbackEarned: 0
-      })
+
+    const orderPayload = {
+      orderType: 'SHOP',
+      customerName: currentUser.name,
+      customerEmail: currentUser.email,
+      customerPhone: checkoutForm.phone,
+      address: checkoutForm.address,
+      city: checkoutForm.city,
+      pincode: checkoutForm.pincode,
+      itemsJson: JSON.stringify(shopCart.map(i => ({ id: i.product.id, name: i.product.name, qty: i.qty, unitPrice: i.product.price }))),
+      subtotal: shopSubtotal,
+      walletDiscount: 0,
+      totalPayable: shopTotal,
+      cashbackEarned: 0
+    }
+
+    triggerRazorpayPayment(shopTotal, orderPayload, (res) => {
       setShopCart([])
       setIsShopDrawerOpen(false)
       setOrderConfirmation(res)
-    } catch (e) { showToast(e.message) }
-    finally { setIsSubmitting(false) }
+    })
   }
 
   return (
