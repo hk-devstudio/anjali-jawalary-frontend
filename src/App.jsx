@@ -612,48 +612,175 @@ function Storefront() {
         </div>
       )}
 
-      {/* HERO BANNER */}
+      {/* HERO BANNER - ROYAL EDITORIAL */}
       <section className="hero-banner">
         <div className="hero-card">
           <div className="hero-content">
             <div className="hero-pill">
-              {activeTab === 'trials' ? '⚡ Try Before You Buy — No Pricing, Just Points' : '💎 Nanjal Haute Jewellery Boutique'}
+              NANJAL COLLECTION
             </div>
             <h1 className="hero-title">
-              {activeTab === 'trials'
-                ? <>Found By woman <span>for women</span></>
-                : <>Handcrafted Bridal, Polki &amp; <span>Temple Heirlooms</span></>
-              }
+              Found by Woman<br /><span>for Women</span>
             </h1>
             <p className="hero-desc">
-              {activeTab === 'trials'
-                ? 'Select up to 6 Trial Points worth of genuine jewellery samples. Pay just ₹199 for curated packaging & courier — get the full ₹199 back as Nanjal Wallet cashback.'
-                : 'Discover hallmark-certified handcrafted jewellery. Use your Nanjal Wallet cashback earned from Trial orders to get instant discounts at checkout!'
-              }
+              Crafted with tradition. Designed for today. {activeTab === 'trials' ? 'Try our curated sample jewellery pieces in the comfort of your home.' : 'Heirloom craftsmanship created to celebrate timeless elegance.'}
             </p>
-            <div className="hero-features">
-              {activeTab === 'trials' ? (
-                <>
-                  <div className="hero-feat-item">⚡ Use Points, Not Money</div>
-                  <div className="hero-feat-item">🎁 Free Gift at 3+ Pts</div>
-                  <div className="hero-feat-item">💰 ₹199 100% Cashback</div>
-                  <div className="hero-feat-item">🚚 Free Shipping</div>
-                </>
-              ) : (
-                <>
-                  <div className="hero-feat-item">💎 Full-Size Originals</div>
-                  <div className="hero-feat-item">💰 Wallet Cashback Discounts</div>
-                  <div className="hero-feat-item">🛡️ 100% Authentic</div>
-                  <div className="hero-feat-item">🚚 Free Shipping</div>
-                </>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <a href="#catalog" className="hero-cta-btn">
+                Explore Collections →
+              </a>
+              {activeTab === 'trials' && (
+                <button
+                  onClick={() => initiateCheckout('trial')}
+                  style={{ background: 'rgba(255,255,255,0.08)', color: '#dfbe82', border: '1px solid rgba(223,190,130,0.4)', padding: '12px 24px', borderRadius: 4, fontFamily: 'Montserrat, sans-serif', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '2px', cursor: 'pointer', textTransform: 'uppercase' }}
+                >
+                  ⚡ Open Trial Box ({trialBox.length})
+                </button>
               )}
             </div>
+          </div>
+          <div className="hero-img-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=900&q=80"
+              alt="Indian Royal Emerald Heritage Jewelry Model"
+            />
           </div>
         </div>
       </section>
 
+      {/* ── 1. SHOP BY CATEGORY (ARCHED LUXURY PORTALS) ── */}
+      <section className="arch-categories-section">
+        <div className="arch-section-header">
+          <div className="arch-ornament">❖ ❖ ❖</div>
+          <h2 className="arch-section-title">Shop by Category</h2>
+          <p className="arch-section-sub">Find the perfect piece for every occasion.</p>
+        </div>
+        <div className="arch-categories-grid">
+          {[
+            { name: 'Necklaces', img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=500&q=80' },
+            { name: 'Earrings', img: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=500&q=80' },
+            { name: 'Rings', img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=500&q=80' },
+            { name: 'Bangles', img: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=500&q=80' },
+            { name: 'Bridal', img: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=500&q=80' }
+          ].map(c => (
+            <button
+              key={c.name}
+              className="arch-cat-card"
+              onClick={() => { setSelectedCat(c.name); document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }) }}
+            >
+              <div className="arch-cat-portal">
+                <img src={c.img} alt={c.name} />
+              </div>
+              <span className="arch-cat-label">{c.name} →</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 2. FEATURED COLLECTION (ROYAL HERITAGE) ── */}
+      <section className="heritage-feature-row">
+        <div className="heritage-container">
+          <div className="heritage-intro">
+            <div className="heritage-intro-sub">Featured Collection</div>
+            <h2 className="heritage-intro-title">Royal Heritage</h2>
+            <p className="heritage-intro-desc">
+              Inspired by timeless traditions, our Royal Heritage collection brings together classic handcrafted designs and regal emerald elegance.
+            </p>
+            <button
+              className="heritage-view-btn"
+              onClick={() => { setActiveTab('shop'); setSelectedCat('All'); document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }) }}
+            >
+              View Collection →
+            </button>
+          </div>
+          <div className="heritage-cards-grid">
+            {(shopProducts.slice(0, 4).length > 0 ? shopProducts.slice(0, 4) : [
+              { id: 'h1', name: 'Royal Emerald Necklace', price: 156000, img: 'https://images.unsplash.com/photo-1608042314453-ae338d80c427?auto=format&fit=crop&w=500&q=80' },
+              { id: 'h2', name: 'Temple Jhumka Earrings', price: 98000, img: 'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?auto=format&fit=crop&w=500&q=80' },
+              { id: 'h3', name: 'Kundan Bangle Set', price: 72000, img: 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=500&q=80' },
+              { id: 'h4', name: 'Regal Emerald Ring', price: 88000, img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=500&q=80' }
+            ]).map((item, idx) => (
+              <div key={idx} className="heritage-card-box" onClick={() => setSelectedProduct(item)} style={{ cursor: 'pointer' }}>
+                <div className="h-img-wrap">
+                  <img src={img(item.imageUrl || item.img)} alt={item.name} />
+                </div>
+                <div className="h-body">
+                  <div className="h-title">{item.name}</div>
+                  <div className="h-price">₹{item.price?.toLocaleString('en-IN')}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. OUR STORY SECTION ── */}
+      <section className="our-story-section">
+        <div className="our-story-container">
+          <div className="story-image-mosaic">
+            <img
+              src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80"
+              alt="Crafted with Passion & Purpose"
+            />
+          </div>
+          <div className="story-content">
+            <div className="story-badge">Our Story</div>
+            <h2 className="story-title">Crafted with Passion &amp; Purpose</h2>
+            <p className="story-desc">
+              At Nanjal Collection, we believe jewellery is more than an accessory — it's a legacy. Every piece is thoughtfully designed and meticulously crafted by skilled artisans, celebrating India's rich heritage while embracing modern sensibilities.
+            </p>
+            <button
+              className="heritage-view-btn"
+              onClick={() => { setActiveTab('trials'); document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' }) }}
+            >
+              Explore Sample Trials →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. 4 TRUST BADGES STRIP ── */}
+      <section className="trust-badges-strip">
+        <div className="trust-badges-container">
+          <div className="trust-badge-item">
+            <div className="trust-icon">💎</div>
+            <div className="trust-title">Certified Authenticity</div>
+            <div className="trust-sub">100% Hallmark Certified</div>
+          </div>
+          <div className="trust-badge-item">
+            <div className="trust-icon">🌿</div>
+            <div className="trust-title">Artisan Craftsmanship</div>
+            <div className="trust-sub">Handcrafted by Skilled Artisans</div>
+          </div>
+          <div className="trust-badge-item">
+            <div className="trust-icon">🛡️</div>
+            <div className="trust-title">Secure Payments</div>
+            <div className="trust-sub">Safe &amp; Encrypted Razorpay Transactions</div>
+          </div>
+          <div className="trust-badge-item">
+            <div className="trust-icon">🚚</div>
+            <div className="trust-title">Worldwide Shipping</div>
+            <div className="trust-sub">Luxury Delivered to Your Doorstep</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. NEWSLETTER STRIP ── */}
+      <section className="newsletter-strip">
+        <div className="newsletter-container">
+          <div className="newsletter-info">
+            <h4>Join Our Nanjal Circle</h4>
+            <p>Be the first to know about new collections, exclusive offers and secret previews.</p>
+          </div>
+          <form className="newsletter-form" onSubmit={e => { e.preventDefault(); showToast('Thank you for subscribing to Nanjal Circle!') }}>
+            <input type="email" placeholder="Your email address" required />
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+      </section>
+
       {/* MAIN CATALOG */}
-      <main className="main-wrap">
+      <main className="main-wrap" id="catalog">
         <div className="catalog-header">
           <div className="category-chips">
             {categories.map(c => (
