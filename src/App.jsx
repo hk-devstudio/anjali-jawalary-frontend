@@ -535,7 +535,10 @@ function Storefront() {
                 </div>
               </div>
             ) : (
-              <button className="pill-btn" onClick={() => setAuthModal('shop')} style={{ background: '#f5f5f4', border: '1px solid #d6d3d1' }}>
+              <button
+                className="pill-btn sign-in-pill"
+                onClick={() => setAuthModal('shop')}
+              >
                 Sign In
               </button>
             )}

@@ -181,6 +181,18 @@ body {
   color: #dfbe82;
 }
 
+.sign-in-pill {
+  background: rgba(223, 190, 130, 0.12) !important;
+  border: 1px solid #dfbe82 !important;
+  color: #dfbe82 !important;
+  letter-spacing: 0.5px;
+}
+.sign-in-pill:hover {
+  background: #dfbe82 !important;
+  color: #0f231a !important;
+  box-shadow: 0 4px 14px rgba(223, 190, 130, 0.35);
+}
+
 .trial-points-pill {
   background: rgba(194, 157, 89, 0.15);
   border-color: rgba(223, 190, 130, 0.5);

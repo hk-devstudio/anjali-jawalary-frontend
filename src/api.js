@@ -1,4 +1,4 @@
-export const API = import.meta.env.VITE_API_URL ?? ''
+export const API = import.meta.env.VITE_API_URL || 'http://13.211.147.215:8081'
 
 export const img = u => {
   if (!u) return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=80'
